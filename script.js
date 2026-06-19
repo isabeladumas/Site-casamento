@@ -32,63 +32,55 @@ function atualizarContador() {
         }
     }
 }
-
-// ============================================
-// FUNÇÃO PARA ENVIAR WHATSAPP
-// ============================================
-function enviarWhatsApp() {
-    const numeroWhatsApp = "1191494616";
-    const quantidade = document.getElementById('quantidade');
-    
-    if (!quantidade) return;
-    
-    const qtd = quantidade.value;
-    let mensagem = `Olá! Confirmo minha presença no casamento de Vitor e Thamiris no dia 18/07/2026. `;
-    
-    if (qtd == 1) {
-        mensagem += `Serei apenas eu.`;
-    } else {
-        mensagem += `Seremos ${qtd} pessoas.`;
-    }
-    
-    const mensagemCodificada = encodeURIComponent(mensagem);
-    window.open(`https://wa.me/55${numeroWhatsApp}?text=${mensagemCodificada}`, '_blank');
-}
-
-// ============================================
-// FUNÇÕES DO PIX
-// ============================================
 function mostrarPix() {
-    const pixDiv = document.getElementById('pixInfo');
-    const btn = document.getElementById('btnMostrarPix');
+    // Pega a caixinha que está escondida (id="pixInfo")
+    const pixInfo = document.getElementById("pixInfo");
     
-    if (!pixDiv || !btn) return;
-    
-    if (pixDiv.style.display === 'none' || pixDiv.style.display === '') {
-        pixDiv.style.display = 'block';
-        btn.innerHTML = '<i class="fas fa-eye-slash"></i> Esconder Chave PIX';
+    // Pega o botão de "Ver Chave PIX"
+    const btnMostrar = document.getElementById("btnMostrarPix");
+
+    // Se estiver escondida, mostra. Se estiver aparecendo, esconde.
+    if (pixInfo.style.display === "none" || pixInfo.style.display === "") {
+        pixInfo.style.display = "block";
+        btnMostrar.innerHTML = '<i class="fas fa-eye-slash"></i> Esconder Chave PIX';
     } else {
-        pixDiv.style.display = 'none';
-        btn.innerHTML = '<i class="fas fa-eye"></i> Ver Chave PIX';
+        pixInfo.style.display = "none";
+        btnMostrar.innerHTML = '<i class="fas fa-eye"></i> Ver Chave PIX';
+    }
+}
+function copiarPix() {
+    // 1. Pega o texto que está dentro do HTML (11991494616)
+    const chavePix = document.getElementById("chavePix").innerText;
+
+    // 2. Tenta usar o método moderno de cópia do navegador
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(chavePix)
+            .then(() => {
+                alert("Chave PIX copiada com sucesso!");
+            })
+            .catch(err => {
+                console.error("Erro ao copiar: ", err);
+                fallbackCopiar(chavePix); // Se falhar, usa o plano B
+            });
+    } else {
+        // Plano B para navegadores antigos ou conexões sem HTTPS seguro
+        fallbackCopiar(chavePix);
     }
 }
 
-function copiarPix() {
-    // ⚠️ COLOQUE SUA CHAVE PIX REAL AQUI! ⚠️
-    const chavePix = "11939422862";
-    
-    navigator.clipboard.writeText(chavePix).then(() => {
-        const btn = event.target.closest('.btn-copiar');
-        if (btn) {
-            const textoOriginal = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-check"></i> Copiado!';
-            setTimeout(() => {
-                btn.innerHTML = textoOriginal;
-            }, 2000);
-        }
-    }).catch(() => {
-        alert('Não foi possível copiar. Copie manualmente: ' + chavePix);
-    });
+// Função de segurança caso o navegador bloqueie o método principal
+function fallbackCopiar(texto) {
+    const textArea = document.createElement("textarea");
+    textArea.value = texto;
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+        document.execCommand('copy');
+        alert("Chave PIX copiada com sucesso!");
+    } catch (err) {
+        alert("Não foi possível copiar automaticamente. Por favor, selecione o texto e copie manualmente.");
+    }
+    document.body.removeChild(textArea);
 }
 // ============================================
 // CARROSSEL DE PREPARATIVOS
